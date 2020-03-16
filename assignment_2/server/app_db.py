@@ -37,6 +37,36 @@ def init_db():
 
         db.commit()
 
+        
+def request_url(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except HTTPError as http_err:
+        print(f'HTTP error occurred: {http_err}')
+    except Exception as err:
+        print(f'Other error occurred: {err}')
+    else:
+        return response.content
+
+    
+def parse_html(url):
+    page_cont = request_url(url)
+    soup = BeautifulSoup(page_cont, 'html.parser')
+    for team in soup.find_all('div', class_="ranked-team"):
+        team_name = team.find('span', class_="name").text
+        logo = team.find('img')['src']
+        position = team.find('span', class_="position").text
+        players = ', '.join([player.text for player in team.find_all('div', class_="rankingNicknames")])
+        points = team.find('span', class_="points").text
+        diff = team.find('div', {"class":["change positive", "change negative"]}) #', '.join([player.text for player in team.find_all('div', class_="rankingNicknames")])
+        diff = "no difference" if diff is None else diff.text
+        cursor = get_db().cursor()
+        cursor.execute('''  INSERT OR REPLACE INTO Rankings(position, team, logo, players, diff, points) 
+                            VALUES(?, ?, ?, ?, ?, ?)''', 
+                       (int(position[1:]), team_name, logo, players, diff, points[1:-1]))
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
 
 def request_url(url):
     try:
