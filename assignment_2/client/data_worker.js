@@ -9,10 +9,10 @@ function draw_table() {
             let row = "";
             let team = "";
             $.each(val, function (key, val) {
-                if (key == 'team_name'){
+                if (key === 'team_name'){
                     team = val;
                 }
-                if (key == 'logo'){
+                if (key === 'logo'){
                     row += '<td><img alt="' + team + '" src="' + val + '" width="100" height="100"></td>';
                 } else {
                     row += '<td>' + val + '</td>';

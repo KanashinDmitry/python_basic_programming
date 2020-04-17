@@ -2,7 +2,7 @@ import json
 import sqlite3
 import requests
 
-from flask import Flask, g, request
+from flask import Flask, g
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 from requests.exceptions import HTTPError
@@ -33,8 +33,14 @@ def init_db():
                , diff text not null
                , points text not null)"""
         )
-        parse_html("https://www.hltv.org/ranking/teams")
 
+        db.commit()
+
+
+def add_data_db():
+    with app.app_context():
+        db = get_db()
+        parse_html("https://www.hltv.org/ranking/teams")
         db.commit()
 
 
@@ -90,4 +96,5 @@ def close_connection(exception):
 
 if __name__ == '__main__':
     init_db()
+    add_data_db()
     app.run()
