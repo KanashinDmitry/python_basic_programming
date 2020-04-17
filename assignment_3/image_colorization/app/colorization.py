@@ -1,9 +1,10 @@
 import numpy as np
 import cv2 as cv
+import os
 
 
-def colorize(img_name):
-    frame = cv.imread(img_name)
+def colorize(path, img_name, folder_name):
+    frame = cv.imread(path)
 
     proto_file = "./models/colorization_deploy_v2.prototxt"
     weights_file = "./models/colorization_release_v2.caffemodel"
@@ -34,6 +35,8 @@ def colorize(img_name):
     img_lab_out = np.concatenate((img_l[:, :, np.newaxis], ab_dec_us), axis=2)
     img_bgr_out = np.clip(cv.cvtColor(img_lab_out, cv.COLOR_Lab2BGR), 0, 1)
 
-    output_file = "result/colorized.png"
+    img_name_split = img_name.split('.')
+    output_file = img_name_split[0] + "_colorized." + img_name_split[1]
+    output_file = os.path.join(folder_name, output_file)
     cv.imwrite(output_file, (img_bgr_out*255).astype(np.uint8))
     return output_file

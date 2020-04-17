@@ -16,17 +16,18 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/uploads/<dir>/<filename>')
+@app.route('/<dir>/<filename>')
 def uploaded_file(dir, filename):
     return send_from_directory(dir, filename)
 
 
 @app.route('/colorization_result')
 def colorize_image():
-    image_path_url = "http://127.0.0.1:5000/uploads/"
-    filename = os.path.join(app.config['UPLOAD_FOLDER'], request.args.get('filename'))
-    colorized = image_path_url + colorize(filename)
-    return render_template('colorized.html', grayscaled=image_path_url + filename, colorized=colorized)
+    image_path_url = "http://127.0.0.1:5000/"
+    name_grayscale = request.args.get('filename')
+    path_grayscale = os.path.join(app.config['UPLOAD_FOLDER'], name_grayscale)
+    colorized_url = image_path_url + colorize(path_grayscale, name_grayscale, "results")
+    return render_template('colorized.html', grayscaled=image_path_url + path_grayscale, colorized=colorized_url)
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -53,4 +54,4 @@ def upload_image():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
