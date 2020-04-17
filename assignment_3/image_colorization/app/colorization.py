@@ -35,8 +35,8 @@ def colorize(path, img_name, folder_name):
     img_lab_out = np.concatenate((img_l[:, :, np.newaxis], ab_dec_us), axis=2)
     img_bgr_out = np.clip(cv.cvtColor(img_lab_out, cv.COLOR_Lab2BGR), 0, 1)
 
-    img_name_split = img_name.split('.')
-    output_file = img_name_split[0] + "_colorized." + img_name_split[1]
+    img_name, _, extension = img_name.partition('.')
+    output_file = img_name + "_colorized." + extension
     output_file = os.path.join(folder_name, output_file)
     cv.imwrite(output_file, (img_bgr_out*255).astype(np.uint8))
     return output_file
